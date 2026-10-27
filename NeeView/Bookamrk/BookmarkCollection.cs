@@ -491,19 +491,47 @@ namespace NeeView
 
         public void Rename(string src, string dst)
         {
+            if (src == dst)
+            {
+                return;
+            }
+
             List<TreeListNode<IBookmarkEntry>> renames = new();
+            List<(TreeListNode<IBookmarkEntry> Parent, TreeListNode<IBookmarkEntry> Item)> removals = new();
 
             Items.WithLock(e =>
             {
-                foreach (var item in e.WalkChildren())
+                var sourceNodes = e.WalkChildren()
+                    .Where(item => item.Value is Bookmark bookmark && bookmark.Path == src)
+                    .ToList();
+                var sourceNodeSet = sourceNodes.ToHashSet();
+
+                foreach (var item in sourceNodes)
                 {
-                    if (item.Value is Bookmark bookmark && bookmark.Path == src)
+                    if (item.Parent is TreeListNode<IBookmarkEntry> parent)
                     {
-                        bookmark.Path = dst;
-                        renames.Add(item);
+                        var duplicates = parent.Children
+                            .Where(child => !sourceNodeSet.Contains(child) && child.Value is Bookmark bookmark && bookmark.Path == dst)
+                            .ToList();
+
+                        foreach (var duplicate in duplicates)
+                        {
+                            if (duplicate.RemoveSelf())
+                            {
+                                removals.Add((parent, duplicate));
+                            }
+                        }
                     }
+
+                    ((Bookmark)item.Value).Path = dst;
+                    renames.Add(item);
                 }
             });
+
+            foreach (var (parent, item) in removals)
+            {
+                BookmarkChanged?.Invoke(this, new BookmarkCollectionChangedEventArgs(EntryCollectionChangedAction.Remove, parent, item));
+            }
 
             foreach (var item in renames)
             {
