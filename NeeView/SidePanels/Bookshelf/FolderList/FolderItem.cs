@@ -300,6 +300,8 @@ namespace NeeView
                     return new StringSearchValue(this.Name ?? "");
                 case "date":
                     return new DateTimeSearchValue(LastWriteTime);
+                case "type":
+                    return new ArchiveFormatSearchValue(ArchiveFormatSearchValue.GetName(this) ?? string.Empty);
                 case "size":
                     return new IntegerSearchValue(Length);
                 case "bookmark":

@@ -8,9 +8,11 @@ namespace NeeView
         {
             Options.Add(BookSearchPropertyProfiles.IsBookmark);
             Options.Add(BookSearchPropertyProfiles.IsHistory);
+            Options.Add(BookSearchPropertyProfiles.Type);
 
             Alias.Add("/bookmark", new() { "/p.bookmark", "/m.eq", "true" });
             Alias.Add("/history", new() { "/p.history", "/m.eq", "true" });
+            Alias.Add("/type", new() { "/p.type", "/m.eq" });
         }
     }
 
@@ -18,6 +20,7 @@ namespace NeeView
     {
         public static SearchPropertyProfile IsBookmark { get; } = new SearchPropertyProfile("bookmark", BooleanSearchValue.Default);
         public static SearchPropertyProfile IsHistory { get; } = new SearchPropertyProfile("history", BooleanSearchValue.Default);
+        public static SearchPropertyProfile Type { get; } = new SearchPropertyProfile("type", new ArchiveFormatSearchValue());
     }
 
 

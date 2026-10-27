@@ -425,6 +425,7 @@ SearchOp.Alias.Property.Size=@InformationKey.FileSize
 SearchOp.Alias.Property.Subject=@InformationKey.Subject
 SearchOp.Alias.Property.Tags=@InformationKey.Tags
 SearchOp.Alias.Property.Text=@SearchOp.Property.Text
+SearchOp.Alias.Property.Type=@SearchOp.Property.Type
 SearchOp.Alias.Property.Title=@InformationKey.Title
 SearchOp.Property.Size=@InformationKey.FileSize
 SetBackgroundAutoCommand=@BackgroundType.Auto
