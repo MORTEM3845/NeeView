@@ -88,6 +88,8 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ElementName=Root, Path=DataContext.DetailToolTip.IsEnabled}" Value="True">
                         <Setter Property="ToolTip" Value="{Binding Detail}"/>
+                        <Setter Property="ToolTipService.Placement" Value="MousePoint" />
+                        <Setter Property="local:DetailToolTipPlacement.IsEnabled" Value="True" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -96,6 +98,8 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ElementName=Root, Path=DataContext.DetailToolTip.IsPanelEnabled}" Value="True">
                         <Setter Property="ToolTip" Value="{Binding Detail}"/>
+                        <Setter Property="ToolTipService.Placement" Value="MousePoint" />
+                        <Setter Property="local:DetailToolTipPlacement.IsEnabled" Value="True" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

@@ -42,6 +42,10 @@
             </ResourceDictionary.MergedDictionaries>
 
 
+            <DataTemplate x:Key="DetailToolTipContentTemplate">
+                <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+            </DataTemplate>
+
             <!-- Panel ListBox -->
             <ScrollUnit x:Key="PanelScrollUnit">Pixel</ScrollUnit>
 
