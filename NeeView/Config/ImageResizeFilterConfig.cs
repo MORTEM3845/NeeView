@@ -83,6 +83,11 @@ namespace NeeView
 
             setting.Sharpen = this.IsUnsharpMaskEnabled;
             setting.UnsharpMask = this.UnsharpMask.CreateUnsharpMaskSetting();
+            if (setting.Sharpen)
+            {
+                // Companded blending avoids bright speckles in dark areas when sharpening.
+                setting.BlendingMode = GammaMode.Companded;
+            }
 
             switch (_resizeInterpolation)
             {
