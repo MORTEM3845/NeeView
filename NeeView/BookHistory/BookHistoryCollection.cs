@@ -137,8 +137,27 @@ namespace NeeView
 
             lock (_lock)
             {
-                return _itemsMap.ContainsKey(place);
+                if (_itemsMap.ContainsKey(place))
+                {
+                    return true;
+                }
             }
+
+            // A move performed by NeeView updates the history path, but the item can
+            // later be moved back outside the app. Match its file identity in that
+            // case so the bookshelf still marks the original location as visited.
+            if (!System.IO.Path.IsPathFullyQualified(place)) return false;
+
+            var systemPath = ArchivePath.GetSystemPath(place, true);
+            if (systemPath is null) return false;
+
+            return FileResolver.Current.GetOldPath(systemPath, path =>
+            {
+                lock (_lock)
+                {
+                    return _itemsMap.ContainsKey(path);
+                }
+            }) is not null;
         }
 
         public BookMementoUnit? FindUnit(string place)
@@ -287,6 +306,11 @@ namespace NeeView
 
             if (node is not null)
             {
+                // Keep an identity record for each moved history path. Folder moves
+                // recursively rename child history entries, which lets Contains()
+                // recognize those files if they are later returned externally.
+                FileResolver.Current.AddArchivePath(dst);
+
                 List<BookHistory> list = [node];
                 HistoryChanged?.Invoke(this, new BookMementoCollectionChangedArgs(BookMementoCollectionChangedType.Replace, list, list));
             }
