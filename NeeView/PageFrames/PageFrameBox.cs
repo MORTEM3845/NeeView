@@ -1215,16 +1215,21 @@ namespace NeeView.PageFrames
             if (_disposedValue) return;
             if (!_bookContext.IsEnabled) return;
 
+            var delta = GetPresetScrollDelta(horizontal, vertical, snap);
+
+            AddPosition(delta.X, delta.Y, span, easeX, easeY);
+        }
+
+        private Vector GetPresetScrollDelta(HorizontalAlignment horizontal, VerticalAlignment vertical, bool snap)
+        {
             var node = _selected.Node;
             AssertSelectedExists();
-            if (node?.Value.Content is not PageFrameContent) return;
+            if (node?.Value.Content is not PageFrameContent) return default;
 
             var contentRect = _transformControlFactory.CreateContentRect(node.Value);
             var viewRect = _transformControlFactory.CreateViewRect(_viewBox.Rect);
             var area = new DragArea(viewRect, contentRect);
-            var delta = area.SnapAlignment(horizontal, vertical, snap);
-
-            AddPosition(delta.X, delta.Y, span, easeX, easeY);
+            return area.SnapAlignment(horizontal, vertical, snap);
         }
 
 
@@ -1693,11 +1698,25 @@ namespace NeeView.PageFrames
         /// </summary>
         private void AutoScroll()
         {
-            if (_context.IsAutoScroll && _context.AutoScrollDuration > TimeSpan.FromMilliseconds(100))
+            if (!_context.IsAutoScroll)
             {
-                var horizontal = Config.Current.BookSetting.BookReadOrder == PageReadOrder.LeftToRight ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-                ScrollToPreset(horizontal, VerticalAlignment.Bottom, false, _context.AutoScrollDuration, EaseTools.LinearEase, EaseTools.LinearEase);
+                return;
             }
+
+            var horizontal = Config.Current.BookSetting.BookReadOrder == PageReadOrder.LeftToRight ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+            var delta = GetPresetScrollDelta(horizontal, VerticalAlignment.Bottom, false);
+            var distance = new Vector(delta.X * _context.DpiScale.DpiScaleX, delta.Y * _context.DpiScale.DpiScaleY).Length;
+            if (distance <= 0.0) return;
+
+            var duration = _context.GetAutoScrollDuration(distance);
+            if (!_context.IsAutoScrollSpeedEnabled && duration <= TimeSpan.FromMilliseconds(100)) return;
+
+            if (_context.IsAutoScrollSpeedEnabled)
+            {
+                SlideShow.Current.SetAutoScrollDuration(duration);
+            }
+
+            AddPosition(delta.X, delta.Y, duration, EaseTools.LinearEase, EaseTools.LinearEase);
         }
 
 

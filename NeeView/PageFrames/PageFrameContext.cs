@@ -156,7 +156,17 @@ namespace NeeView.PageFrames
 
         public bool IsAutoScroll => _slideshow.IsPlaying && _config.SlideShow.IsAutoScroll;
 
-        public TimeSpan AutoScrollDuration => IsAutoScroll ? TimeSpan.FromMilliseconds(_slideshow.Interval) : TimeSpan.Zero;
+        public bool IsAutoScrollSpeedEnabled => IsAutoScroll && _config.SlideShow.IsAutoScrollSpeedEnabled;
+
+        public TimeSpan GetAutoScrollDuration(double distance)
+        {
+            if (!IsAutoScroll) return TimeSpan.Zero;
+
+            var interval = TimeSpan.FromMilliseconds(_slideshow.Interval);
+            return IsAutoScrollSpeedEnabled
+                ? SlideShowAutoScrollDuration.Calculate(distance, _config.SlideShow.AutoScrollSpeed, interval)
+                : interval;
+        }
 
         protected virtual void Dispose(bool disposing)
         {

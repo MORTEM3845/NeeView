@@ -89,6 +89,25 @@ namespace NeeView
 
         public double Interval => _isPlaying ? _timer.Interval : Config.Current.SlideShow.SlideShowInterval * 1000.0;
 
+        /// <summary>
+        /// Extend the current slide's timer to cover its speed-based auto-scroll.
+        /// </summary>
+        public void SetAutoScrollDuration(TimeSpan duration)
+        {
+            if (!_isPlaying || !_timer.Enabled) return;
+
+            var interval = Math.Max(duration.TotalMilliseconds, 1.0);
+            if (Config.Current.SlideShow.IsPrioritizeTime)
+            {
+                if (interval <= _timer.Interval) return;
+            }
+
+            _timer.Stop();
+            _timer.Interval = interval;
+            _timer.Start();
+            Played?.Invoke(this, new SlideShowPlayedEventArgs(_isPlaying, _timer.Interval));
+        }
+
 
         private void PageFrameBoxPresenter_ViewPageChanged(object? sender, ViewPageChangedEventArgs e)
         {

@@ -18,6 +18,8 @@ namespace NeeView
         [DefaultEquality] private bool _isPrioritizeTime;
         [DefaultEquality] private bool _isWaitAnimation;
         [DefaultEquality] private bool _isAutoScroll = true;
+        [DefaultEquality] private bool _isAutoScrollSpeedEnabled;
+        [DefaultEquality] private double _autoScrollSpeed = 300.0;
         [DefaultEquality] private PageEndAction _pageEndAction = PageEndAction.Loop;
         [DefaultEquality] private PageMoveType _pageMoveType = PageMoveType.Fade;
         [DefaultEquality] private double _pageMoveDuration = 0.5;
@@ -90,6 +92,26 @@ namespace NeeView
         {
             get { return _isAutoScroll; }
             set { SetProperty(ref _isAutoScroll, value); }
+        }
+
+        /// <summary>
+        /// 自動スクロールを速度基準にする
+        /// </summary>
+        [PropertyMember]
+        public bool IsAutoScrollSpeedEnabled
+        {
+            get { return _isAutoScrollSpeedEnabled; }
+            set { SetProperty(ref _isAutoScrollSpeedEnabled, value); }
+        }
+
+        /// <summary>
+        /// 自動スクロール速度 (px/sec)
+        /// </summary>
+        [PropertyRange(10.0, 2000.0, TickFrequency = 10.0, IsEditable = true)]
+        public double AutoScrollSpeed
+        {
+            get { return _autoScrollSpeed; }
+            set { SetProperty(ref _autoScrollSpeed, Math.Clamp(AppMath.Round(value), 10.0, 2000.0)); }
         }
 
         /// <summary>
