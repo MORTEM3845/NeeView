@@ -729,6 +729,41 @@ namespace NeeView
             }
         }
 
+        public async Task FirstFolder(BookLoadOption option = BookLoadOption.None)
+        {
+            await MoveToBoundaryFolder(false, option);
+        }
+
+        public async Task LastFolder(BookLoadOption option = BookLoadOption.None)
+        {
+            await MoveToBoundaryFolder(true, option);
+        }
+
+        private async Task MoveToBoundaryFolder(bool last, BookLoadOption option)
+        {
+            if (_disposedValue || _folderCollection is null || BookHub.Current.IsBusy)
+            {
+                return;
+            }
+
+            var item = GetBoundaryFolder(_folderCollection.Items, last);
+            if (item is null)
+            {
+                return;
+            }
+
+            var index = GetFolderItemIndex(item);
+            await SetPlaceAsync(_folderCollection.Place, new FolderItemPosition(item.TargetPath, index), FolderSetPlaceOption.UpdateHistory);
+            RequestLoad(item, null, option, false);
+        }
+
+        internal static FolderItem? GetBoundaryFolder(IEnumerable<FolderItem> items, bool last)
+        {
+            return last
+                ? items.LastOrDefault(item => !item.IsSystem())
+                : items.FirstOrDefault(item => !item.IsSystem());
+        }
+
         // ランダムなフォルダーに移動
         public async Task RandomFolder(BookLoadOption option = BookLoadOption.None)
         {
