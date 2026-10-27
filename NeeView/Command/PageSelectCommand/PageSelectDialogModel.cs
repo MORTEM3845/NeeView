@@ -2,6 +2,7 @@
 using NeeView.Properties;
 using System;
 using System.Globalization;
+using System.Text;
 
 namespace NeeView
 {
@@ -42,6 +43,25 @@ namespace NeeView
             {
                 Value = Math.Min(Value + delta, Max);
             }
+        }
+
+        public static bool TryParseValue(string? text, out int value)
+        {
+            if (text is null)
+            {
+                value = default;
+                return false;
+            }
+
+            var normalized = new StringBuilder(text.Length);
+            foreach (var character in text)
+            {
+                normalized.Append(character is >= '\uFF10' and <= '\uFF19'
+                    ? (char)('0' + character - '\uFF10')
+                    : character);
+            }
+
+            return int.TryParse(normalized.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
         }
     }
 }
