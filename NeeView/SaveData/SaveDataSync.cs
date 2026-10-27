@@ -18,6 +18,8 @@ namespace NeeView
     [LocalDebug]
     public partial class SaveDataSync : IDisposable
     {
+        internal const int HistorySaveIntervalSeconds = 30;
+
         // Note: Initialize()必須
         static SaveDataSync() => Current = new SaveDataSync();
         public static SaveDataSync Current { get; }
@@ -38,7 +40,7 @@ namespace NeeView
         private SaveDataSync()
         {
             _delaySaveBookmark = new DelayAction(() => SaveBookmark(true), TimeSpan.FromSeconds(0.5));
-            _delaySaveHistory = new IntervalAction(() => SaveHistory(true), TimeSpan.FromMinutes(5.0));
+            _delaySaveHistory = new IntervalAction(() => SaveHistory(true), TimeSpan.FromSeconds(HistorySaveIntervalSeconds));
             _delaySaveFolderConfig = new DelayAction(() => SaveFolderConfig(true), TimeSpan.FromSeconds(5.0));
             _delaySaveQuickAccess = new DelayAction(() => SaveQuickAccess(true), TimeSpan.FromSeconds(0.5));
         }

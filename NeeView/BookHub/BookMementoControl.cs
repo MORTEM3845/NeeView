@@ -115,16 +115,28 @@ namespace NeeView
             LocalDebug.WriteLine("Try save BookMemento...");
 
             // 履歴更新
-            if (!_historyEntry && CanHistory(book))
+            if (UpdateHistoryEntry(ref _historyEntry, CanHistory(book), book.CreateMemento, memento => BookHistoryCollection.Current.Add(memento, IsKeepHistoryOrder(book))))
             {
-                _historyEntry = true;
-                var memento = book.CreateMemento();
-                if (memento is not null)
-                {
-                    BookHistoryCollection.Current.Add(memento, IsKeepHistoryOrder(book));
-                    LocalDebug.WriteLine("Try save BookMemento: Saved");
-                }
+                LocalDebug.WriteLine("Try save BookMemento: Saved");
             }
+        }
+
+        internal static bool UpdateHistoryEntry(ref bool historyEntry, bool canHistory, Func<BookMemento?> createMemento, Action<BookMemento> updateHistory)
+        {
+            if (!canHistory)
+            {
+                return false;
+            }
+
+            historyEntry = true;
+            var memento = createMemento();
+            if (memento is null)
+            {
+                return false;
+            }
+
+            updateHistory(memento);
+            return true;
         }
 
         /// <summary>
