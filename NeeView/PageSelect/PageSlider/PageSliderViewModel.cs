@@ -57,7 +57,9 @@ namespace NeeView
             }
             else
             {
-                int turn = _mouseWheelDelta.NotchCount(e);
+                int turn = Config.Current.Slider.MouseWheelAction == SliderMouseWheelAction.MovePage
+                    ? MouseWheelDelta.PageCount(e.Delta)
+                    : _mouseWheelDelta.NotchCount(e);
                 if (turn == 0) return;
 
                 for (int i = 0; i < Math.Abs(turn); ++i)

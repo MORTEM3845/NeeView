@@ -23,19 +23,24 @@ namespace NeeView
 
         public int NotchCount(MouseWheelEventArgs e, MouseWheelDeltaOption options = MouseWheelDeltaOption.None)
         {
-            if (e.Timestamp - _timestamp > _resetTime)
+            return NotchCount(e.Delta, e.Timestamp, options);
+        }
+
+        public int NotchCount(int delta, int timestamp, MouseWheelDeltaOption options = MouseWheelDeltaOption.None)
+        {
+            if (timestamp - _timestamp > _resetTime)
             {
                 ////System.Diagnostics.Debug.WriteLine($"WheelCount: reset.");
                 _delta = 0;
             }
 
-            _delta += e.Delta;
+            _delta += delta;
             int count = _delta / _notch;
             _delta -= count * _notch;
 
             if ((options & MouseWheelDeltaOption.LimitOnce) == MouseWheelDeltaOption.LimitOnce)
             {
-                if (_timestamp == e.Timestamp && _count != 0)
+                if (_timestamp == timestamp && _count != 0)
                 {
                     return 0;
                 }
@@ -44,11 +49,14 @@ namespace NeeView
             }
 
             _count = count;
-            _timestamp = e.Timestamp;
+            _timestamp = timestamp;
 
             ////System.Diagnostics.Debug.WriteLine($"WheelCount: {count}, {_delta}");
             return count;
         }
+
+        /// <summary>Converts a wheel delta to one signed page step.</summary>
+        public static int PageCount(int delta) => Math.Sign(delta);
     }
 
     [Flags]

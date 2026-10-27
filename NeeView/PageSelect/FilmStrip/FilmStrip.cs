@@ -254,17 +254,15 @@ namespace NeeView
 
         public void MoveWheel(object sender, MouseWheelEventArgs e)
         {
-            var delta = -_mouseWheelDelta.NotchCount(e);
-
             switch (Config.Current.FilmStrip.MouseWheelAction)
             {
                 default:
                 case FilmStripMouseWheelAction.MoveSelection:
-                    MoveSelectedIndex(delta, PageSlider.Current.IsSliderDirectionReversed);
+                    MoveSelectedIndex(-_mouseWheelDelta.NotchCount(e), PageSlider.Current.IsSliderDirectionReversed);
                     break;
 
                 case FilmStripMouseWheelAction.MovePage:
-                    MovePage(delta);
+                    MovePage(-MouseWheelDelta.PageCount(e.Delta));
                     break;
 
                 case FilmStripMouseWheelAction.CommandDependent:
