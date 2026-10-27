@@ -24,6 +24,7 @@ namespace NeeView
         public PageSelectDialogViewModel(PageSelectDialogModel model)
         {
             _model = model;
+            InputValue = _model.Value.ToString(CultureInfo.InvariantCulture);
 
             _model.SubscribePropertyChanged(nameof(_model.Value),
                 (s, e) => OnPropertyChanged(nameof(Value)));
@@ -43,10 +44,17 @@ namespace NeeView
             set => _model.Value = value;
         }
 
+        public string InputValue { get; set; } = string.Empty;
+
 
         [RelayCommand]
         private void Decide()
         {
+            if (!PageSelectDialogModel.TryParseValue(InputValue, out var value))
+            {
+                return;
+            }
+            _model.Value = value;
             Decided?.Invoke(this, new PageSelectDialogDecidedEventArgs(true));
         }
 

@@ -29,6 +29,30 @@ namespace NeeView
         public int Min { get; set; }
         public int Max { get; set; }
 
+        public static bool TryParseValue(string? text, out int value)
+        {
+            value = 0;
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            var normalized = new StringBuilder(text.Length);
+            for (var index = 0; index < text.Length; index++)
+            {
+                var digit = CharUnicodeInfo.GetDecimalDigitValue(text, index);
+                if (digit >= 0)
+                {
+                    normalized.Append((char)('0' + digit));
+                }
+                else
+                {
+                    normalized.Append(text[index]);
+                }
+            }
+            return int.TryParse(normalized.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
+        }
+
         public string Caption => TextResources.GetString("JumpPageCommand");
 
         public string Label => string.Format(CultureInfo.InvariantCulture, TextResources.GetString("Notice.JumpPageLabel"), Min, Max);
@@ -43,25 +67,6 @@ namespace NeeView
             {
                 Value = Math.Min(Value + delta, Max);
             }
-        }
-
-        public static bool TryParseValue(string? text, out int value)
-        {
-            if (text is null)
-            {
-                value = default;
-                return false;
-            }
-
-            var normalized = new StringBuilder(text.Length);
-            foreach (var character in text)
-            {
-                normalized.Append(character is >= '\uFF10' and <= '\uFF19'
-                    ? (char)('0' + character - '\uFF10')
-                    : character);
-            }
-
-            return int.TryParse(normalized.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
         }
     }
 }
