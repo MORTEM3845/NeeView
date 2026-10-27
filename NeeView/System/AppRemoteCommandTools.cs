@@ -33,7 +33,9 @@ namespace NeeView
     [JsonSerializable(typeof(string[]))]
     [JsonSerializable(typeof(int))]
     [JsonSerializable(typeof(bool))]
+    [JsonSerializable(typeof(DiagnosticSpiderState))]
     internal partial class AppRemoteCommandJsonContext : JsonSerializerContext
     {
     }
+
 }

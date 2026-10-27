@@ -462,7 +462,11 @@ namespace NeeView
             {
                 if (_logFile == null)
                 {
-                    var logFile = AppSettings.Current.LogFile;
+                    var logFile = GetEnvironmentValue("NEEVIEW_LOG_FILE");
+                    if (string.IsNullOrEmpty(logFile))
+                    {
+                        logFile = AppSettings.Current.LogFile;
+                    }
 
 #if DEBUG
                     if (string.IsNullOrEmpty(logFile))
